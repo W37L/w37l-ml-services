@@ -6,9 +6,9 @@ from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
 from dataclasses import dataclass
 
-from src.mlservice.models.model import User
-from src.mlservice.models.model import Post
-from src.mlservice.adapters.repository import IMachineLearningRepository
+from src.models.model import User
+from src.models.model import Post
+from src.adapters.repository import IMachineLearningRepository
 
 
 @dataclass
