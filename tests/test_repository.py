@@ -3,8 +3,8 @@ from tempfile import TemporaryDirectory
 import pytest as pytest
 
 from src.container import ApplicationContainer
-from src.domain.model import User
-from src.domain.model import Post
+from src.models.model import User
+from src.models.model import Post
 from src.adapters.repository_impl import (
     IMachineLearningRepository,
 )

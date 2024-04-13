@@ -2,8 +2,8 @@ import pickle
 from dataclasses import dataclass
 from pathlib import Path
 
-from src.domain.model import User
-from src.domain.model import Post
+from src.models.model import User
+from src.models.model import Post
 from src.adapters.repository import IMachineLearningRepository
 
 
