@@ -16,8 +16,8 @@ class MachineLearningService:
     ml_repository: IMachineLearningRepository
 
     def check_profanity(self, content: str) -> bool:
-        model = joblib.load('src/service/models/linear_svc_model.joblib')
-        vectorizer = joblib.load('src/service/models/vectorizer.joblib')
+        model = joblib.load('src/service/utils/linear_svc_model.joblib')
+        vectorizer = joblib.load('src/service/utils/vectorizer.joblib')
         proccesed = preprocess_text(content)
         feature = vectorizer.transform([proccesed])
         prediction = model.predict(feature)[0]
