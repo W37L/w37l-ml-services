@@ -1,7 +1,7 @@
 from dependency_injector import providers, containers
 
-from src.service.service_impl import MachineLearningService
-from src.adapters.repository_impl import (
+from src.mlservice.service.service_impl import MachineLearningService
+from src.mlservice.adapters.repository_impl import (
     MachineLearningRepository,
 )
 

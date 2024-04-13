@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name="src",
+    name="mlservice",
     version="0.1",
-    packages=["src"],
+    packages=["mlservice"],
 )

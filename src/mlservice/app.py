@@ -4,9 +4,9 @@ from pathlib import Path
 from fastapi import FastAPI
 import uvicorn
 
-from src.container import ApplicationContainer
-from src.apis.setup import setup
-from src import __version__
+from src.mlservice.container import ApplicationContainer
+from src.mlservice.apis.setup import setup
+from src.mlservice import __version__
 
 
 def init() -> FastAPI:

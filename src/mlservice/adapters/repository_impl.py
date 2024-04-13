@@ -2,9 +2,9 @@ import pickle
 from dataclasses import dataclass
 from pathlib import Path
 
-from src.models.model import User
-from src.models.model import Post
-from src.adapters.repository import IMachineLearningRepository
+from src.mlservice.models.model import User
+from src.mlservice.models.model import Post
+from src.mlservice.adapters.repository import IMachineLearningRepository
 
 
 class TodoEntryNotFound(Exception):
