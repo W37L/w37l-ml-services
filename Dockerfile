@@ -5,9 +5,11 @@ RUN pip install -r /tmp/requirements.txt
 
 RUN mkdir -p /src
 COPY src/ /src/
-RUN pip install -e .
-COPY tests/ /tests/
 
 WORKDIR /src
+
+RUN pip install -e .
+
+COPY tests/ /tests/
 
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
