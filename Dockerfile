@@ -8,7 +8,7 @@ COPY src/ /src/
 
 WORKDIR /src
 
-RUN pip install -e .
+RUN pip install -e /src
 
 COPY tests/ /tests/
 
