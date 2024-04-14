@@ -1,8 +1,8 @@
 from dependency_injector.wiring import Provide
 from fastapi import APIRouter
 
-from src.service.service import IMachineLearningService
-from src.container import ApplicationContainer
+from mlservice.service.service import IMachineLearningService
+from mlservice.container import ApplicationContainer
 
 machine_learning_service: IMachineLearningService = Provide[ApplicationContainer.machine_learning_service]
 

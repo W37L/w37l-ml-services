@@ -3,8 +3,8 @@ from typing import Any
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
-from src.container import ApplicationContainer
-from src.apis import controller
+from mlservice.container import ApplicationContainer
+from mlservice.apis import controller
 
 
 def setup(app: FastAPI, container: ApplicationContainer) -> None:
