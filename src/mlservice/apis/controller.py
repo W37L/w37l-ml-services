@@ -30,5 +30,3 @@ async def recomendation_user() -> list[str]:
 @router.get("/recomendationPost", response_model=list[str])
 async def recomendation_post() -> list[str]:
     return ["recomendationPost"]
-
-

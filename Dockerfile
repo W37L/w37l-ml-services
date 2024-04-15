@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 80
 
-CMD ["uvicorn", "app:init", "--host", "0.0.0.0", "--port", "80", "--proxy-headers"]
+CMD ["uvicorn", "app:init", "--host", "0.0.0.0", "--port", "80"]
