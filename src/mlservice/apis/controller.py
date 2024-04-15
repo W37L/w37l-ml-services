@@ -7,14 +7,10 @@ from src.mlservice.container import ApplicationContainer
 machine_learning_service: IMachineLearningService = Provide[ApplicationContainer.machine_learning_service]
 
 router = APIRouter(
-    prefix="",
+    prefix="/MLService",
     tags=["MLService"],
     responses={404: {"description": "Not found"}},
 )
-
-@router.get("/")
-async def read_root():
-    return {"message": "Hello World"}
 
 
 @router.post("/checkProfanity", response_model=bool)
@@ -34,5 +30,3 @@ async def recomendation_user() -> list[str]:
 @router.get("/recomendationPost", response_model=list[str])
 async def recomendation_post() -> list[str]:
     return ["recomendationPost"]
-
-
