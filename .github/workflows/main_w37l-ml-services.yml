@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy container app to Azure Web App - W37L-ML-Services
+name: Build and deploy container app to Azure Web App w37l-ml-services
 
 on:
   push:
@@ -45,7 +45,7 @@ jobs:
       id: deploy-to-webapp
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'W37L-ML-Services'
+        app-name: 'w37l-ml-services'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_0637a6bb17934e1c9ee396598b5ca410 }}
         images: 'ghcr.io/${{ secrets.AzureAppService_ContainerUsername_80fe3cfab67441f79801be61d8ab701b }}/mcr.microsoft.com/appsvc/staticsite:${{ github.sha }}'
