@@ -4,9 +4,8 @@ WORKDIR /src
 
 COPY requirements.txt /tmp/
 RUN pip install -r /tmp/requirements.txt
-RUN pip install uvicorn
 
 RUN mkdir -p /src
-COPY src/ /src/
+COPY src/ .
 
-CMD ["uvicorn", "src.mlservice.app:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "app:init", "--host", "0.0.0.0", "--port", "80"]

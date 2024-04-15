@@ -1,5 +1,6 @@
 # app
 sqlalchemy<2
+dependency_injector
 fastapi
 psycopg2-binary
 joblib
