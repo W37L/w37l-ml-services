@@ -11,8 +11,8 @@ services:
       - ./tests:/tests
     command:
       - uvicorn
-      - app:app
+      - app:init
       - --host 0.0.0.0
       - --port 8000
     ports:
-      - "5005:8000"
+      - "80:80"
