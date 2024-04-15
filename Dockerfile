@@ -1,11 +1,13 @@
 FROM python:3.11.7
 
-WORKDIR /src
+WORKDIR /code
 
-COPY requirements.txt /tmp/
-RUN pip install -r /tmp/requirements.txt
+COPY requirements.txt .
 
-RUN mkdir -p /src
-COPY src/ .
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
-CMD ["uvicorn", "app:init", "--host", "0.0.0.0", "--port", "80"]
+COPY . .
+
+EXPOSE 80
+
+CMD ["uvicorn", "app:init", "--host", "0.0.0.0", "--port", "80", "--proxy-headers"]
