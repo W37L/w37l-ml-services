@@ -10,6 +10,7 @@ nltk
 
 # dev/tests
 uvicorn
+gunicorn
 pytest
 pytest-icdiff
 mypy
