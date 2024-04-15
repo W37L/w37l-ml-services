@@ -6,9 +6,9 @@ from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
 from dataclasses import dataclass
 
-from mlservice.models.model import User
-from mlservice.models.model import Post
-from mlservice.adapters.repository import IMachineLearningRepository
+from src.mlservice.models.model import User
+from src.mlservice.models.model import Post
+from src.mlservice.adapters.repository import IMachineLearningRepository
 
 
 @dataclass
@@ -16,8 +16,8 @@ class MachineLearningService:
     ml_repository: IMachineLearningRepository
 
     def check_profanity(self, content: str) -> bool:
-        model = joblib.load('mlservice/service/utils/linear_svc_model.joblib')
-        vectorizer = joblib.load('mlservice/service/utils/vectorizer.joblib')
+        model = joblib.load('src/mlservice/service/utils/linear_svc_model.joblib')
+        vectorizer = joblib.load('src/mlservice/service/utils/vectorizer.joblib')
         proccesed = preprocess_text(content)
         feature = vectorizer.transform([proccesed])
         prediction = model.predict(feature)[0]

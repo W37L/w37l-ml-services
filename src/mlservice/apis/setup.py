@@ -3,13 +3,12 @@ from typing import Any
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
-from mlservice.container import ApplicationContainer
-from mlservice.apis import controller
+from src.mlservice.container import ApplicationContainer
+from src.mlservice.apis import controller
 
 
 def setup(app: FastAPI, container: ApplicationContainer) -> None:
 
-    # Add other controllers here
     app.include_router(controller.router)
 
     # Inject dependencies
