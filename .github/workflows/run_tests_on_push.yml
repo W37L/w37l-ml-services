@@ -7,7 +7,6 @@ on:
       - 'development/**'
   pull_request:
     branches:
-      - main
       - development
       - 'development/**'
 
