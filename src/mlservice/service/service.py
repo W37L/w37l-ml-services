@@ -1,7 +1,7 @@
 from abc import ABC
 
-from mlservice.models.model import User
-from mlservice.models.model import Post
+from src.mlservice.models.model import User
+from src.mlservice.models.model import Post
 
 
 class IMachineLearningService(ABC):
