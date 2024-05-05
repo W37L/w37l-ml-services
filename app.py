@@ -11,8 +11,6 @@ from src.mlservice import __version__
 
 def init() -> FastAPI:
     container = ApplicationContainer()
-
-    # Setup logging
     container.configuration.log_level.from_env("ML_Service_LOG_LEVEL", "INFO")
 
     str_level = container.configuration.log_level()
@@ -23,17 +21,13 @@ def init() -> FastAPI:
     logger = logging.getLogger(__name__)
     logger.info("Logging level is set to %s" % str_level.upper())
 
-    # init Database
     container.configuration.storage_dir.from_env("MLSERVICE_STORAGE_DIR", "/tmp/mlservice")
     Path(container.configuration.storage_dir()).mkdir(parents=True, exist_ok=True)
 
-    # Init API and attach the container
     app = FastAPI()
     app.extra["container"] = container
 
-    # Do setup and dependencies wiring
     setup(app, container)
-
     return app
 
 

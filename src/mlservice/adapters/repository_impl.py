@@ -1,9 +1,9 @@
 import pickle
+import pandas as pd
 from dataclasses import dataclass
 from pathlib import Path
 
-from src.mlservice.models.model import User
-from src.mlservice.models.model import Post
+from src.mlservice.model.model import *
 from src.mlservice.adapters.repository import IMachineLearningRepository
 
 
@@ -39,3 +39,23 @@ class MachineLearningRepository(IMachineLearningRepository):
                 entry: Post = pickle.load(entry_file)
                 entries.append(entry.content)
         return entries
+    
+@dataclass
+class MockMachineLearningRepository(IMachineLearningRepository):
+
+    def get_user(self, userid: str) -> User:
+        pass
+
+    def get_posts(self, userid: str) -> list[Post]:
+        pass
+
+    def get_last_posts(self) -> list[str]:
+        # Mock loading data from an Excel file
+        try:
+            df = pd.read_excel('training_models/test1.xlsx')
+            text_list = df['Text'].tolist()
+            return text_list
+        except Exception as e:
+            print(f"Error loading text from Excel file: {e}")
+            return []
+
