@@ -8,8 +8,11 @@ scikit-learn==1.3.0
 redis
 beautifulsoup4
 nltk
+openpyxl
+pandas
 
 # dev/tests
+ipykernel
 uvicorn
 gunicorn
 pytest

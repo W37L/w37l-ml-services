@@ -1,18 +1,25 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
-from src.mlservice.models.model import User
-from src.mlservice.models.model import Post
+from src.mlservice.model.model import *
 
 
 class IMachineLearningService(ABC):
-    def check_profanity(self, text: str) -> bool:
+    @abstractmethod
+    def check_profanity(self, text: str) -> Response:
         ...
 
-    def get_trending_topics(self) -> list[str]:
+    @abstractmethod
+    def get_hashtag(self, text: str) -> Response:
         ...
 
-    def get_recomendation_user(self, user: User) -> list[User]:
+    @abstractmethod
+    def get_trending_topics(self) -> Response:
         ...
-    
-    def get_recomendation_post(self, user: User) -> list[Post]:
+
+    @abstractmethod
+    def get_recommendation_user(self, user: str) -> Response:
+        ...
+
+    @abstractmethod
+    def get_recommendation_post(self, user: str) -> Response:
         ...

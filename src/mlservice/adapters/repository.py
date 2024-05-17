@@ -1,21 +1,21 @@
 from abc import ABC
 
-from src.mlservice.models.model import Post
-from src.mlservice.models.model import User
+from src.mlservice.model.model import *  # Assuming this imports User and Post classes
 
 
 class IMachineLearningRepository(ABC):
-    def get_user(self, userid: str) -> User:
-        ...
+    """
+    Interface defining methods for interacting with a machine learning model repository.
 
-    def add_user(self, user: User) -> None:
-        ...
+    This interface provides methods for retrieving user information, their following users,
+    their posts, and potentially the latest posts from the repository.
 
-    def get_posts(self, userid: str) -> list[Post]:
-        ...
+    Concrete implementations of this interface will handle the specific storage mechanisms 
+    and retrieval logic for the machine learning model data.
+    """
 
-    def get_last_posts(self) -> list[str]:
+    def get_user_relations(self, userid: str) -> UserRelations:
         ...
     
-    def add_post(self, post: Post) -> None:
+    def get_last_posts(self) -> list[Post]:
         ...

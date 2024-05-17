@@ -1,13 +1,22 @@
-FROM python:3.11.7
+# Use the official Python image from the Docker Hub
+FROM python:3.11-slim
 
-WORKDIR /code
+# Set the working directory
+WORKDIR /app
 
+RUN apt-get update && apt-get install -y gcc
+
+# Copy the requirements file to the working directory
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
+# Install the required packages
+RUN pip install -r requirements.txt
 
+# Copy the entire project to the working directory
 COPY . .
 
-EXPOSE 80
+# Expose the port FastAPI is running on
+EXPOSE 8000
 
-CMD ["uvicorn", "app:init", "--host", "0.0.0.0", "--port", "80"]
+# Start the FastAPI server using Uvicorn
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
