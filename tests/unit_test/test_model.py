@@ -1,73 +1,117 @@
 import unittest
-from src.mlservice.model.model import User
-from src.mlservice.model.model import Post
-from src.mlservice.model.model import Response
+from pydantic import ValidationError
+from src.mlservice.model.model import UserRelations, Post, Response
+
+class TestUserRelations(unittest.TestCase):
+
+    def test_valid_data(self):
+        """
+        Test UserRelations model with valid data.
+        """
+        data = {
+            "userid": "user123",
+            "blockedUsers": ["user456", "user789"],
+            "following": ["user001", "user999"],
+            "followers": ["user333", "user555"],
+            "higthlightedTweetIds": ["tweet1", "tweet2"],
+            "likedTweetIds": ["tweet3", "tweet4"],
+            "mutedUsers": ["userABC", "userXYZ"],
+            "reportedUsers": ["userMNO", "userPQR"],
+            "reTweetedTweetIds": ["tweet5", "tweet6"],
+        }
+        user_relations = UserRelations(**data)
+
+        self.assertEqual(user_relations.userid, data["userid"])
+        self.assertEqual(user_relations.blockedUsers, data["blockedUsers"])
+        self.assertEqual(user_relations.following, data["following"])
+        # ... (similar assertions for other attributes)
+
+    def test_missing_data(self):
+        """
+        Test UserRelations model with missing data.
+        """
+        data = {"userid": "user123"}
+        with self.assertRaises(ValidationError):
+            UserRelations(**data)
+
+        data = {}
+        with self.assertRaises(ValidationError):
+            UserRelations(**data)
+
+    def test_invalid_data_type(self):
+        """
+        Test UserRelations model with invalid data types.
+        """
+        data = {
+            "userid": 123,  # Integer instead of string
+            "blockedUsers": "invalid_list",  # String instead of list
+        }
+        with self.assertRaises(ValidationError):
+            UserRelations(**data)
 
 
-class UserTest(unittest.TestCase):
-
-    def test_user_creation(self):
-        user = User.create("user123", "John Doe")
-
-        self.assertEqual(user.userid, "user123")
-        self.assertEqual(user.name, "John Doe")
-
-    def test_user_creation_empty_userid(self):
-        with self.assertRaises(ValueError):
-            User.create("", "John Doe")
-
-    def test_user_creation_empty_name(self):
-        with self.assertRaises(ValueError):
-            User.create("user123", "")
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
 
+class TestPost(unittest.TestCase):
+
+    def test_valid_data(self):
+        """
+        Test Post model with valid data.
+        """
+        data = {"content": "This is a sample post."}
+        post = Post(**data)
+
+        self.assertEqual(post.content, data["content"])
+
+    def test_missing_data(self):
+        """
+        Test Post model with missing data.
+        """
+        data = {}
+        with self.assertRaises(ValidationError):
+            Post(**data)
 
 
-class PostTest(unittest.TestCase):
+if __name__ == "__main__":
+    unittest.main()
 
-    def test_post_creation(self):
-        post = Post.create("post1", "Sample Title", "user_abc", "This is the post content.")
+class TestResponse(unittest.TestCase):
 
-        self.assertEqual(post.postid, "post1")
-        self.assertEqual(post.title, "Sample Title")
-        self.assertEqual(post.userid, "user_abc")
-        self.assertEqual(post.content, "This is the post content.")
+    def test_valid_data_single_string(self):
+        """
+        Test Response model with valid data (single string message).
+        """
+        data = {"success": True, "message": "Operation successful."}
+        response = Response(**data)
 
-    def test_post_creation_empty_postid(self):
-        with self.assertRaises(ValueError):
-            Post.create("", "Sample Title", "user_abc", "This is the post content.")
+        self.assertEqual(response.success, data["success"])
+        self.assertEqual(response.message, data["message"])
 
-    def test_post_creation_empty_title(self):
-        with self.assertRaises(ValueError):
-            Post.create("post1", "", "user_abc", "This is the post content.")
+    def test_valid_data_list_message(self):
+        """
+        Test Response model with valid data (list of lists message).
+        """
+        data = {
+            "success": False,
+            "message": [
+                ["Error code 1", "Error message 1"],
+                ["Error code 2", "Error message 2"],
+            ],
+        }
+        response = Response(**data)
 
-    def test_post_creation_empty_userid(self):
-        with self.assertRaises(ValueError):
-            Post.create("post1", "Sample Title", "", "This is the post content.")
+        self.assertEqual(response.success, data["success"])
+        self.assertEqual(response.message, data["message"])
 
-    def test_post_creation_empty_content(self):
-        with self.assertRaises(ValueError):
-            Post.create("post1", "Sample Title", "user_abc", "")
-
-
-
-class ResponseTest(unittest.TestCase):
-
-    def test_response_creation_success(self):
-        response = Response.create(True)
-
-        self.assertTrue(response.success)
-        self.assertIsNone(response.error)
-
-    def test_response_creation_error(self):
-        response = Response.create(False, "An error occurred.")
-
-        self.assertFalse(response.success)
-        self.assertEqual(response.error, "An error occurred.")
+    def test_invalid_data(self):
+        """
+        Test Response model with invalid data.
+        """
+        data = {"success": True}  # Missing message field
+        with self.assertRaises(ValidationError):
+            Response(**data)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

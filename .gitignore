@@ -3,4 +3,5 @@ __pycache__
 .venv
 .mypy_cache
 .vscode
+.pytest_cache
 *.egg-info

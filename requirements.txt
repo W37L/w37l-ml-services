@@ -12,6 +12,7 @@ openpyxl
 pandas
 
 # dev/tests
+ipykernel
 uvicorn
 gunicorn
 pytest

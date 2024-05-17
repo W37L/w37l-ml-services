@@ -1,18 +1,9 @@
-version: "3.8"
+version: '3.8'
 
 services:
-
-  api:
+  app:
     build: .
-    environment:
-      - PYTHONUNBUFFERED=1
-    volumes:
-      - ./src:/src
-      - ./tests:/tests
-    command:
-      - uvicorn
-      - app:init
-      - --host 0.0.0.0
-      - --port 8000
     ports:
-      - "80:80"
+      - "8000:8000"
+    volumes:
+      - .:/app

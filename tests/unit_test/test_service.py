@@ -1,82 +1,75 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
-from src.mlservice.service import MachineLearningService
-from src.mlservice.model.model import User, Post
+from src.mlservice.service.service_impl import MachineLearningService
 from src.mlservice.adapters.repository import IMachineLearningRepository
 
 
-class MachineLearningServiceTest(unittest.TestCase):
+class TestMachineLearningService(unittest.TestCase):
 
-    @patch('src.mlservice.service.joblib.load')
-    def test_check_profanity_success(self, mock_load):
-        # Mock successful loading of model and vectorizer
-        mock_load.side_effect = [MagicMock(), MagicMock()]
-        service = MachineLearningService(MagicMock())  # Mock repository
+    @patch('joblib.load')
+    @patch('src.mlservice.service.utils.data_processing.preprocess_text')
+    def test_check_profanity(self, mock_preprocess_text, mock_joblib_load):
+        mock_preprocess_text.return_value = 'processed text'
+        
+        mock_model = MagicMock()
+        mock_model.predict.return_value = [1]
+        mock_joblib_load.side_effect = [mock_model, MagicMock()]
 
-        # Test content with profanity
-        profanity_content = "This is some offensive content."
-        response = service.check_profanity(profanity_content)
+        ml_repository = MagicMock(spec=IMachineLearningRepository)
+        service = MachineLearningService(ml_repository=ml_repository)
 
+        response = service.check_profanity('some text')
         self.assertTrue(response.success)
-        self.assertEqual(response.error, "Profanity detected")
+        self.assertEqual(response.message, 'Profanity detected')
 
-    @patch('src.mlservice.service.joblib.load')
-    def test_check_profanity_no_profanity(self, mock_load):
-        # Mock successful loading of model and vectorizer
-        mock_load.side_effect = [MagicMock(), MagicMock()]
-        service = MachineLearningService(MagicMock())  # Mock repository
-
-        # Test content without profanity
-        clean_content = "This is a harmless message."
-        response = service.check_profanity(clean_content)
-
-        self.assertTrue(response.success)
-        self.assertEqual(response.error, "No profanity detected")
-
-    @patch('src.mlservice.service.joblib.load')
-    def test_check_profanity_model_not_found(self, mock_load):
-        # Mock model load to raise FileNotFoundError
-        mock_load.side_effect = FileNotFoundError("Model not found")
-        service = MachineLearningService(MagicMock())  # Mock repository
-
-        response = service.check_profanity("Some content")
-
+        mock_model.predict.return_value = [0]
+        response = service.check_profanity('some text')
         self.assertFalse(response.success)
-        self.assertEqual(response.error, "Profanity detection model or vectorizer not found.")
+        self.assertEqual(response.message, 'No profanity detected')
 
-    def test_get_trending_topics(self):
-        # Placeholder test - Modify as you implement the logic
-        mock_repository = MagicMock()
-        mock_repository.get_last_posts.return_value = []  # Empty list
-        service = MachineLearningService(mock_repository)
+    @patch('joblib.load')
+    @patch('src.mlservice.service.utils.data_processing.preprocess_text')
+    def test_get_hashtag(self, mock_preprocess_text, mock_joblib_load):
+        mock_preprocess_text.return_value = 'processed text'
+        
+        mock_vectorizer = MagicMock()
+        mock_vectorizer.fit_transform.return_value = 'matrix'
+        mock_vectorizer.get_feature_names_out.return_value = ['word1', 'word2', 'word3']
+        
+        mock_lda = MagicMock()
+        mock_joblib_load.side_effect = [mock_vectorizer, mock_lda]
 
-        topics = service.get_trending_topics()
+        ml_repository = MagicMock(spec=IMachineLearningRepository)
+        service = MachineLearningService(ml_repository=ml_repository)
 
-        self.assertEqual(topics, [])  # Empty list returned
+        with patch('src.mlservice.service.machine_learning_service.get_hashtag', return_value='#hashtag'):
+            response = service.get_hashtag('some text')
+        
+        self.assertTrue(response.success)
+        self.assertEqual(response.message, '#hashtag')
 
-    def test_get_recommendation_user(self):
-        # Placeholder test - Modify as you implement the logic
-        mock_repository = MagicMock()
-        service = MachineLearningService(mock_repository)
+    @patch('joblib.load')
+    @patch('src.mlservice.service.utils.data_processing.preprocess_text')
+    def test_get_trending_topics(self, mock_preprocess_text, mock_joblib_load):
+        mock_preprocess_text.side_effect = lambda text: f'processed {text}'
+        
+        mock_vectorizer = MagicMock()
+        mock_vectorizer.fit_transform.return_value = 'matrix'
+        mock_vectorizer.get_feature_names_out.return_value = ['word1', 'word2', 'word3']
+        
+        mock_lda = MagicMock()
+        mock_joblib_load.side_effect = [mock_vectorizer, mock_lda]
 
-        # Provide a User object for the test
-        user = User("user123", "John Doe")
-        recommendations = service.get_recommendation_user(user)
+        ml_repository = MagicMock(spec=IMachineLearningRepository)
+        ml_repository.get_last_posts.return_value = [MagicMock(content='post1'), MagicMock(content='post2')]
+        service = MachineLearningService(ml_repository=ml_repository)
 
-        self.assertEqual(recommendations, [])  # Empty list returned
-
-    def test_get_recommendation_post(self):
-        # Placeholder test - Modify as you implement the logic
-        mock_repository = MagicMock()
-        service = MachineLearningService(mock_repository)
-
-        # Provide a User object for the test
-        user = User("user123", "John Doe")
-        recommendations = service.get_recommendation_post(user)
-
-        self.assertEqual(recommendations, [])  # Empty list returned
-
+        with patch('src.mlservice.service.machine_learning_service.get_topics', return_value='topics'):
+            response = service.get_trending_topics()
+        
+        self.assertTrue(response.success)
+        self.assertEqual(response.message, 'topics')
 
 if __name__ == '__main__':
     unittest.main()
