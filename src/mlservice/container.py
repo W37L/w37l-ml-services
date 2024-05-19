@@ -1,4 +1,3 @@
-import os
 from dependency_injector import providers, containers
 
 from src.mlservice.service.service_impl import MachineLearningService
@@ -18,10 +17,7 @@ class ApplicationContainer(containers.DeclarativeContainer):
 
     configuration = providers.Configuration()
     """
-    Provider for accessing configuration settings.
-
     This provider retrieves configuration settings from the configured source.
-    The specific source depends on the implementation.
     """
 
     use_mock_repository = True
@@ -33,8 +29,6 @@ class ApplicationContainer(containers.DeclarativeContainer):
         lambda: MockMachineLearningRepository() if ApplicationContainer.use_mock_repository else MachineLearningRepository(storage_dir=ApplicationContainer.configuration.storage_dir),
     )
     """
-    Provider for the machine learning repository.
-
     This factory function dynamically creates the appropriate machine learning repository
     based on the `use_mock_repository` flag. It utilizes the configuration provider
     (`configuration`) to access the storage directory for the actual repository.

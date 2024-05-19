@@ -18,11 +18,7 @@ class UserRelations(BaseModel):
 
 
 class Post(BaseModel):
-    postId: str
     content: str
-    likes: int
-    retweets: int
-    userId: str
 
     @classmethod
     def from_dict(cls, data: dict):

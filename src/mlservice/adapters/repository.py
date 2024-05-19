@@ -14,7 +14,7 @@ class IMachineLearningRepository(ABC):
     and retrieval logic for the machine learning model data.
     """
 
-    def get_user_relations(self, userid: str) -> UserRelations:
+    def get_user_relations(self, userid: str) -> list[UserRelations]:
         ...
     
     def get_last_posts(self) -> list[Post]:
