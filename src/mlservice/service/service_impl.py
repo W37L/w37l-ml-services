@@ -1,6 +1,8 @@
 import joblib
+import pandas as pd
+import logging
 from dataclasses import dataclass
-
+from sklearn.metrics.pairwise import cosine_similarity
 from src.mlservice.model.model import *
 from src.mlservice.service.utils.data_processing import *
 from src.mlservice.adapters.repository import IMachineLearningRepository
@@ -97,15 +99,70 @@ class MachineLearningService:
 
     def get_recommendation_user(self, user: str) -> Response:
 
-        # Implement user recommendation logic here
-        # ... (implementation details)
-
-        return []  # Placeholder for recommendation logic
+        try:
+            # Get user relations from the ML repository
+            user_relations = self.ml_repository.get_user_relations(user)
+            
+            user_following = {user_relations.userid: user_relations.following}
+            multiLabelBinarizer = joblib.load('src/mlservice/service/utils/multi_label_binarizer.joblib')
+            following_matrix = multiLabelBinarizer.fit_transform(user_following.values())
+            user_ids = list(user_following.keys())
+            following_df = pd.DataFrame(following_matrix, index=user_ids, columns=multiLabelBinarizer.classes_)
+            
+            user_similarity = cosine_similarity(following_df)
+            similarity_df = pd.DataFrame(user_similarity, index=user_ids, columns=user_ids)
+            
+            # Function to get recommendations for a user
+            def recommend_users(user_id, similarity_df, top_n=20):
+                if user_id not in similarity_df.index:
+                    return []
+                similar_users = similarity_df[user_id].sort_values(ascending=False)
+                similar_users = similar_users.drop(user_id)
+                recommendations = similar_users.head(top_n).index.tolist()
+                return recommendations
+            
+            recommended_users = recommend_users(user, similarity_df)
+            
+            if recommended_users:
+                message = f"Recommended users for {user}: {recommended_users}"
+            else:
+                message = f"No recommendations found for {user}"
+            return Response(success=True, message=message)
+    
+        except Exception as e:
+            error_message = f"Error getting recommendations for user {user}: {e}"
+            logging.error(error_message)
+            return Response(success=False, message=error_message)
 
     def get_recommendation_post(self, user: str) -> Response:
-
-
-        # Implement post recommendation logic here
-        # ... (implementation details)
-
-        return []  # Placeholder for recommendation logic
+        try:
+            user_relations = self.ml_repository.get_user_relations(user)
+            last_posts = self.ml_repository.get_last_posts()
+            
+            following = user_relations.following
+            followers = user_relations.followers
+            
+            # Aggregate posts from following and followers
+            relevant_posts = [post.content for post in last_posts if post.userid in following or post.userid in followers]
+            
+            # Extract TF-IDF features from the post content
+            tfidf_vectorizer = joblib.load('src/mlservice/service/utils/tfidf_vectorizer.joblib')
+            tfidf_matrix = tfidf_vectorizer.fit_transform(relevant_posts)
+    
+            # Calculate similarity between posts and user interests
+            user_interests = tfidf_vectorizer.transform([post.content for post in last_posts if post.userid == user])
+            post_similarity = cosine_similarity(user_interests, tfidf_matrix)
+    
+            # Get indices of top recommended posts
+            top_indices = post_similarity.argsort()[0][50:][::-1]
+    
+            # Get post IDs corresponding to the top indices
+            user_recommendations = [last_posts[i].post_id for i in top_indices]
+            
+            # Return response
+            return Response(success=True, message=user_recommendations)
+        
+        except Exception as e:
+            error_message = f"Error getting post recommendations for user {user}: {e}"
+            logging.error(error_message)
+            return Response(success=False, message=error_message)

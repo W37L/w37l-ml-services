@@ -6,16 +6,24 @@ from dataclasses import dataclass
 from src.mlservice.model.model import *
 from src.mlservice.adapters.repository import IMachineLearningRepository
 
-
 class RepositoryEntryNotFound(Exception):
     """Raised when a requested user or post entry is not found."""
     pass
 
 @dataclass
 class MachineLearningRepository(IMachineLearningRepository):
-    storage_dir = "http://localhost:3000"
+    storage_dir: str
 
-    def get_user_relations(self, userid: str) -> UserRelations:
+    def get_user_relations(self, userid: str) -> list[UserRelations]:
+        """
+        Fetches user relations data for a list of user IDs and returns a list of UserRelations objects.
+
+        Args:
+            user_ids (list[str]): A list of user IDs to fetch data for.
+
+        Returns:
+            list[UserRelations]: A list of UserRelations objects containing user relation data.
+        """
 
         # Define the API endpoint URL
         api_url = f"/api/users/{userid}"
@@ -31,7 +39,7 @@ class MachineLearningRepository(IMachineLearningRepository):
                 raise RepositoryEntryNotFound(f"User with ID {userid} not found")
 
             # Extract data and map to corresponding attributes
-            return UserRelations(
+            user_relations = UserRelations(
                 userid=user_data.get("userId"),
                 blockedUsers=user_data.get("blockedUsers", []),
                 following=user_data.get("following", []),
@@ -42,6 +50,9 @@ class MachineLearningRepository(IMachineLearningRepository):
                 reportedUsers=user_data.get("reportedUsers", []),
                 reTweetedTweetIds=user_data.get("reTweetedTweetIds", []),
             )
+            
+            # Return a list containing the user relations
+            return [user_relations]
 
         except requests.exceptions.RequestException as e:
             logging.error(f"Error fetching user from API: {e}")
@@ -52,6 +63,13 @@ class MachineLearningRepository(IMachineLearningRepository):
             raise RepositoryEntryNotFound(f"User with ID {userid} not found")
     
     def get_last_posts(self) -> list[Post]:
+        """
+        Fetches a list of the latest posts from the API and returns them as Post objects.
+
+        Returns:
+            list[Post]: A list of Post objects containing the latest posts.
+        """
+
         # Define the API endpoint URL
         api_url = "/api/getPosts"
 
@@ -79,20 +97,27 @@ class MachineLearningRepository(IMachineLearningRepository):
 class MockMachineLearningRepository(IMachineLearningRepository):
     """Mock implementation of the MachineLearningRepository interface, used for testing purposes."""
 
-    def get_user_relations() -> UserRelations:
+    def get_user_relations() -> list[UserRelations]:
         try:
             df = pd.read_excel('training_models/test2.xlsx')
-            return UserRelations(
-            userid=df.get("userid"),
-            blockedUsers=df.get("blockedUsers", []),
-            following=df.get("following", []),
-            followers=df.get("followers", []),
-            higthlightedTweetIds=df.get("higthlightedTweetIds", []),
-            likedTweetIds=df.get("likedTweetIds", []),
-            mutedUsers=df.get("mutedUsers", []),
-            reportedUsers=df.get("reportedUsers", []),
-            reTweetedTweetIds=df.get("reTweetedTweetIds", []),
-        )
+
+            user_relations_list = []
+            for index, row in df.iterrows():
+                user_relations = UserRelations(
+                    userid=row.get("userid"),
+                    blockedUsers=row.get("blockedUsers", []),
+                    following=row.get("following", []),
+                    followers=row.get("followers", []),
+                    higthlightedTweetIds=row.get("higthlightedTweetIds", []),
+                    likedTweetIds=row.get("likedTweetIds", []),
+                    mutedUsers=row.get("mutedUsers", []),
+                    reportedUsers=row.get("reportedUsers", []),
+                    reTweetedTweetIds=row.get("reTweetedTweetIds", []),
+                )
+                user_relations_list.append(user_relations)
+
+            return user_relations_list
+
         except Exception as e:
             logging.error(f"Error loading user data from Excel file: {e}")
             raise NotImplementedError("User retrieval is not implemented in the mock repository")
